@@ -1,6 +1,6 @@
-use std::collections::HashMap;
 use rand::rngs::SmallRng;
 use rand_seeder::Seeder;
+use std::collections::HashMap;
 
 use crate::math::{power_law, power_law_char, random_char};
 
@@ -33,7 +33,7 @@ impl<'a> Language<'a> {
         Self {
             syllable_types: vec![],
             categories: HashMap::new(),
-            syllables:vec![],
+            syllables: vec![],
             rng: Seeder::from(seed).make_rng(),
             rewrite_rules: vec![],
         }
@@ -63,8 +63,7 @@ impl<'a> Language<'a> {
     ) -> &mut Self {
         for _ in 0..amount {
             let syllable = self.random_syllable(dropoff, syllable_dropoff);
-            self.syllables
-                .push(syllable);
+            self.syllables.push(syllable);
         }
 
         self
@@ -72,16 +71,20 @@ impl<'a> Language<'a> {
 
     pub fn random_syllable(&mut self, dropoff: u32, syllable_dropoff: u32) -> String {
         let mut syllable = String::new();
-        let pattern_index = power_law(self.categories.len() as u32, syllable_dropoff, &mut self.rng);
+        let pattern_index = power_law(
+            self.categories.len() as u32,
+            syllable_dropoff,
+            &mut self.rng,
+        );
         let pattern = &self.syllable_types[pattern_index as usize];
 
         for c in pattern.chars() {
             let expansion = self.categories.get(&c).unwrap();
 
             if dropoff == 0 {
-                syllable.push(random_char(&expansion, &mut self.rng));
+                syllable.push(random_char(expansion, &mut self.rng));
             } else {
-                syllable.push(power_law_char(&expansion, dropoff, &mut self.rng));
+                syllable.push(power_law_char(expansion, dropoff, &mut self.rng));
             }
         }
 
